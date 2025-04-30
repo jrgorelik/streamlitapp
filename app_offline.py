@@ -34,7 +34,7 @@ rail_mileage = None
 truck_mileage = None
 tonnage = 0
 route_geometry = "0"
-mileage = st.number_input("Miles: ")
+# mileage = st.number_input("Miles: ")
 tonnage = st.number_input("Number of tons: ")
 
 origin_city_state = st.selectbox("Origin Location", options=mini_ref_locations["city_state"].sort_values())
