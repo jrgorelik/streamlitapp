@@ -34,6 +34,8 @@ rail_mileage = None
 truck_mileage = None
 tonnage = 0
 route_geometry = "0"
+rail_carbon_estimate = 16.81
+truck_carbon_estimate = 82.56
 # mileage = st.number_input("Miles: ")
 tonnage = st.number_input("Number of tons: ")
 
@@ -112,13 +114,21 @@ if route_geometry !="0":
                              initial_view_state=initial_view))
 
     st.write("Green represents the rail path. Red represents the truck path.")
-def most_basic_comparison(tonnage, routes = False, mileage = None, rail_mileage=None, truck_mileage=None):
+
+st.write("The model is currently using 16.81 g CO_2 per ton-mile for rail and 82.56 g CO_2 per ton-mile for trucking.  If you would like to use your own estimates please enter them below")
+rail_carbon_estimate_entered = st.number_input("Rail grams Carbon Dioxide per ton-mile: ") 
+rail_carbon_estimate = rail_carbon_estimate_entered if rail_carbon_estimate_entered > 0 else rail_carbon_estimate
+truck_carbon_estimate_entered = st.number_input("Trucking grams Carbon Dioxide per ton-mile: ") 
+truck_carbon_estimate = truck_carbon_estimate_entered if truck_carbon_estimate_entered > 0 else truck_carbon_estimate
+
+
+def most_basic_comparison(tonnage, rail_carbon_estimate, truck_carbon_estimate, routes = False, mileage = None, rail_mileage=None, truck_mileage=None):
     if routes:
-        rail_total = rail_mileage * tonnage * 16.81/1000
-        truck_total = truck_mileage * tonnage * 82.56/1000
+        rail_total = rail_mileage * tonnage * rail_carbon_estimate/1000
+        truck_total = truck_mileage * tonnage * truck_carbon_estimate/1000
     else:
-        rail_total = mileage * tonnage * 16.81 / 1000
-        truck_total = mileage * tonnage * 82.56 / 1000
+        rail_total = mileage * tonnage * rail_carbon_estimate / 1000
+        truck_total = mileage * tonnage * truck_carbon_estimate / 1000
     st.write("The shipment will produce {} kg(s) of CO_2 if it is transported via Rail".format(rail_total))
     st.write("The shipment will produce {} kg(s) of CO_2 if it is transported via Truck".format(truck_total))
     st.write("Shipping via Rail will save {} kg(s) of CO_2".format(truck_total-rail_total))
@@ -129,7 +139,9 @@ if mileage == 0:
     if not rail_mileage and not truck_mileage:
         st.write("Please Input values for CO_2 estimates")
     else:
-        most_basic_comparison(tonnage, routes = True, mileage = mileage, rail_mileage=rail_mileage, truck_mileage=truck_mileage)
+        most_basic_comparison(tonnage, rail_carbon_estimate = rail_carbon_estimate, truck_carbon_estimate = truck_carbon_estimate,
+                              routes = True, mileage = mileage, rail_mileage=rail_mileage, truck_mileage=truck_mileage)
 else:
-    most_basic_comparison(tonnage, False, mileage, rail_mileage, truck_mileage)
+    most_basic_comparison(tonnage, rail_carbon_estimate, truck_carbon_estimate,
+                          False, mileage, rail_mileage, truck_mileage)
 # conn.close()
